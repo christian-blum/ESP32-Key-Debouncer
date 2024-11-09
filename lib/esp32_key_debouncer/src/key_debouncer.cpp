@@ -1,255 +1,254 @@
-#include "key.h"
-#include "settings.h"
+#include "key_debouncer.h"
 
 #include <array>
 #include <vector>
 
-static std::vector<Key *> keys;
+static std::vector<KeyDebouncer *> keys;
 static hw_timer_t *key_manager_timer;
 static bool key_manager_is_set_up;
-static std::array<Key *, KEY_DEBOUNCER_GPIO_PINS> keys_for_interrupts;
+static std::array<KeyDebouncer *, KEY_DEBOUNCER_GPIO_PINS> keys_for_interrupts;
 
 
 
 
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_00() {
-  Key *key = keys_for_interrupts[0];
+  KeyDebouncer *key = keys_for_interrupts[0];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_01() {
-  Key *key = keys_for_interrupts[1];
+  KeyDebouncer *key = keys_for_interrupts[1];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_02() {
-  Key *key = keys_for_interrupts[2];
+  KeyDebouncer *key = keys_for_interrupts[2];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_03() {
-  Key *key = keys_for_interrupts[3];
+  KeyDebouncer *key = keys_for_interrupts[3];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_04() {
-  Key *key = keys_for_interrupts[4];
+  KeyDebouncer *key = keys_for_interrupts[4];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_05() {
-  Key *key = keys_for_interrupts[5];
+  KeyDebouncer *key = keys_for_interrupts[5];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_06() {
-  Key *key = keys_for_interrupts[6];
+  KeyDebouncer *key = keys_for_interrupts[6];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_07() {
-  Key *key = keys_for_interrupts[7];
+  KeyDebouncer *key = keys_for_interrupts[7];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_08() {
-  Key *key = keys_for_interrupts[8];
+  KeyDebouncer *key = keys_for_interrupts[8];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_09() {
-  Key *key = keys_for_interrupts[9];
+  KeyDebouncer *key = keys_for_interrupts[9];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_10() {
-  Key *key = keys_for_interrupts[10];
+  KeyDebouncer *key = keys_for_interrupts[10];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_11() {
-  Key *key = keys_for_interrupts[11];
+  KeyDebouncer *key = keys_for_interrupts[11];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_12() {
-  Key *key = keys_for_interrupts[12];
+  KeyDebouncer *key = keys_for_interrupts[12];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_13() {
-  Key *key = keys_for_interrupts[13];
+  KeyDebouncer *key = keys_for_interrupts[13];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_14() {
-  Key *key = keys_for_interrupts[14];
+  KeyDebouncer *key = keys_for_interrupts[14];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_15() {
-  Key *key = keys_for_interrupts[15];
+  KeyDebouncer *key = keys_for_interrupts[15];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_16() {
-  Key *key = keys_for_interrupts[16];
+  KeyDebouncer *key = keys_for_interrupts[16];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_17() {
-  Key *key = keys_for_interrupts[17];
+  KeyDebouncer *key = keys_for_interrupts[17];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_18() {
-  Key *key = keys_for_interrupts[18];
+  KeyDebouncer *key = keys_for_interrupts[18];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_19() {
-  Key *key = keys_for_interrupts[19];
+  KeyDebouncer *key = keys_for_interrupts[19];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_20() {
-  Key *key = keys_for_interrupts[20];
+  KeyDebouncer *key = keys_for_interrupts[20];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_21() {
-  Key *key = keys_for_interrupts[21];
+  KeyDebouncer *key = keys_for_interrupts[21];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_22() {
-  Key *key = keys_for_interrupts[22];
+  KeyDebouncer *key = keys_for_interrupts[22];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_23() {
-  Key *key = keys_for_interrupts[23];
+  KeyDebouncer *key = keys_for_interrupts[23];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_24() {
-  Key *key = keys_for_interrupts[24];
+  KeyDebouncer *key = keys_for_interrupts[24];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_25() {
-  Key *key = keys_for_interrupts[25];
+  KeyDebouncer *key = keys_for_interrupts[25];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_26() {
-  Key *key = keys_for_interrupts[26];
+  KeyDebouncer *key = keys_for_interrupts[26];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_27() {
-  Key *key = keys_for_interrupts[27];
+  KeyDebouncer *key = keys_for_interrupts[27];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_28() {
-  Key *key = keys_for_interrupts[28];
+  KeyDebouncer *key = keys_for_interrupts[28];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_29() {
-  Key *key = keys_for_interrupts[29];
+  KeyDebouncer *key = keys_for_interrupts[29];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_30() {
-  Key *key = keys_for_interrupts[30];
+  KeyDebouncer *key = keys_for_interrupts[30];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_31() {
-  Key *key = keys_for_interrupts[31];
+  KeyDebouncer *key = keys_for_interrupts[31];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_32() {
-  Key *key = keys_for_interrupts[32];
+  KeyDebouncer *key = keys_for_interrupts[32];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_33() {
-  Key *key = keys_for_interrupts[33];
+  KeyDebouncer *key = keys_for_interrupts[33];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_34() {
-  Key *key = keys_for_interrupts[34];
+  KeyDebouncer *key = keys_for_interrupts[34];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_35() {
-  Key *key = keys_for_interrupts[35];
+  KeyDebouncer *key = keys_for_interrupts[35];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_36() {
-  Key *key = keys_for_interrupts[36];
+  KeyDebouncer *key = keys_for_interrupts[36];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_37() {
-  Key *key = keys_for_interrupts[37];
+  KeyDebouncer *key = keys_for_interrupts[37];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_38() {
-  Key *key = keys_for_interrupts[38];
+  KeyDebouncer *key = keys_for_interrupts[38];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_39() {
-  Key *key = keys_for_interrupts[39];
+  KeyDebouncer *key = keys_for_interrupts[39];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_40() {
-  Key *key = keys_for_interrupts[40];
+  KeyDebouncer *key = keys_for_interrupts[40];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_41() {
-  Key *key = keys_for_interrupts[41];
+  KeyDebouncer *key = keys_for_interrupts[41];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_42() {
-  Key *key = keys_for_interrupts[42];
+  KeyDebouncer *key = keys_for_interrupts[42];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_43() {
-  Key *key = keys_for_interrupts[43];
+  KeyDebouncer *key = keys_for_interrupts[43];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_44() {
-  Key *key = keys_for_interrupts[44];
+  KeyDebouncer *key = keys_for_interrupts[44];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_45() {
-  Key *key = keys_for_interrupts[45];
+  KeyDebouncer *key = keys_for_interrupts[45];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_46() {
-  Key *key = keys_for_interrupts[46];
+  KeyDebouncer *key = keys_for_interrupts[46];
   if (key) key->interrupt();
 }
 
 static void ARDUINO_ISR_ATTR key_interrupt_handler_47() {
-  Key *key = keys_for_interrupts[47];
+  KeyDebouncer *key = keys_for_interrupts[47];
   if (key) key->interrupt();
 }
 
@@ -304,12 +303,12 @@ static void (*key_manager_interrupt_handler[KEY_DEBOUNCER_GPIO_PINS])() = {
   key_interrupt_handler_47
 };
 
-static void key_manager_interrupt_handler_register(Key *key) {
+static void key_manager_interrupt_handler_register(KeyDebouncer *key) {
   keys_for_interrupts[key->pin] = key;
   attachInterrupt(key->pin, key_manager_interrupt_handler[key->pin], CHANGE);
 }
 
-static void key_manager_interrupt_handler_unregister(Key *key) {
+static void key_manager_interrupt_handler_unregister(KeyDebouncer *key) {
   detachInterrupt(key->pin);
   keys_for_interrupts[key->pin] = nullptr;
 }
@@ -317,7 +316,7 @@ static void key_manager_interrupt_handler_unregister(Key *key) {
 static void ARDUINO_ISR_ATTR key_manager_reschedule() {
   uint64_t earliest = -1;
   bool needed = false;
-  for (std::vector<Key *>::iterator i = keys.begin(); i < keys.end(); i++) {
+  for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if ((*i)->debouncing) {
       if (earliest > (*i)->validWhen) earliest = (*i)->validWhen;
       needed = true;
@@ -339,7 +338,7 @@ static void ARDUINO_ISR_ATTR key_manager_reschedule() {
 
 static void ARDUINO_ISR_ATTR key_manager_timer_interrupt() {
   uint64_t now = timerRead(key_manager_timer);
-  for (std::vector<Key *>::iterator i = keys.begin(); i < keys.end(); i++) {
+  for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (now >= (*i)->validWhen) (*i)->isNowValid();
     if ((*i)->repeat && now >= (*i)->repeatWhen) (*i)->actionRepeat();
   }
@@ -354,7 +353,7 @@ static bool key_manager_begin() {
   return true;
 }
 
-static bool key_manager_addKey(Key *key) {
+static bool key_manager_addKey(KeyDebouncer *key) {
   if (!key_manager_is_set_up) {
     if (!key_manager_begin()) return false;
   }
@@ -363,36 +362,36 @@ static bool key_manager_addKey(Key *key) {
   return true;
 }
 
-static void key_manager_removeKey(Key *key) {
+static void key_manager_removeKey(KeyDebouncer *key) {
   key_manager_interrupt_handler_unregister(key);
-  for (std::vector<Key *>::iterator i = keys.begin(); i < keys.end(); i++) {
+  for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (*i == key) keys.erase(i);
   }
 }
 
 
 
-Key::Key(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay) {
-  Key::pin = pin;
-  Key::inverseLogic = inverseLogic;
-  Key::autoRepeatDelay = autoRepeatDelay;
-  Key::autoRepeatPeriod = autoRepeatPeriod;
+KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay) {
+  KeyDebouncer::pin = pin;
+  KeyDebouncer::inverseLogic = inverseLogic;
+  KeyDebouncer::autoRepeatDelay = autoRepeatDelay;
+  KeyDebouncer::autoRepeatPeriod = autoRepeatPeriod;
 }
 
-Key::Key(uint8_t pin, bool inverseLogic) : Key(pin, inverseLogic, 0, 0) {
+KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic) : KeyDebouncer(pin, inverseLogic, 0, 0) {
 }
 
-Key::Key(uint8_t pin) : Key(pin, false) {
+KeyDebouncer::KeyDebouncer(uint8_t pin) : KeyDebouncer(pin, false) {
 }
 
-Key::~Key() {
+KeyDebouncer::~KeyDebouncer() {
   if (isRegistered) {
     key_manager_removeKey(this);
     isRegistered = false;
   }
 }
 
-bool Key::begin() {
+bool KeyDebouncer::begin() {
   pinMode(pin, inverseLogic ? INPUT_PULLUP : INPUT_PULLDOWN);
   bool currentState = digitalRead(pin);
   state = inverseLogic ? !currentState : currentState;
@@ -400,23 +399,23 @@ bool Key::begin() {
   return key_manager_addKey(this);
 }
 
-void Key::callMeIfPressedOnInterrupt(void (*handler)()) {
+void KeyDebouncer::callMeIfPressedOnInterrupt(void (*handler)()) {
   callMeIfPressedOnInterruptHandler = handler;
 }
 
-void Key::callMeIfReleasedOnInterrupt(void (*handler)()) {
+void KeyDebouncer::callMeIfReleasedOnInterrupt(void (*handler)()) {
   callMeIfReleasedOnInterruptHandler = handler;
 }
 
-void Key::callMeIfPressedOnLoop(void (*handler)()) {
+void KeyDebouncer::callMeIfPressedOnLoop(void (*handler)()) {
   callMeIfPressedOnLoopHandler = handler;
 }
 
-void Key::callMeIfReleasedOnLoop(void (*handler)()) {
+void KeyDebouncer::callMeIfReleasedOnLoop(void (*handler)()) {
   callMeIfReleasedOnLoopHandler = handler;
 }
 
-void ARDUINO_ISR_ATTR Key::interrupt() {
+void ARDUINO_ISR_ATTR KeyDebouncer::interrupt() {
   lastInterruptWhen = timerRead(key_manager_timer);
   validWhen = lastInterruptWhen + KEY_DEBOUNCER_DEBOUNCE_TIME_US;
   debouncing = true;
@@ -425,20 +424,20 @@ void ARDUINO_ISR_ATTR Key::interrupt() {
   key_manager_reschedule();
 }
 
-void ARDUINO_ISR_ATTR Key::action() {
+void ARDUINO_ISR_ATTR KeyDebouncer::action() {
   if (state && callMeIfPressedOnInterruptHandler) (*callMeIfPressedOnInterruptHandler)();
   if (!state && callMeIfReleasedOnInterruptHandler) (*callMeIfReleasedOnInterruptHandler)();
   if (state && callMeIfPressedOnLoopHandler) loopPressed = true;
   if (!state && callMeIfReleasedOnLoopHandler) loopReleased = true;
 }
 
-void ARDUINO_ISR_ATTR Key::actionRepeat() {
+void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
   action();
   uint64_t now = timerRead(key_manager_timer);
   repeatWhen = now + autoRepeatPeriod;
 }
 
-void ARDUINO_ISR_ATTR Key::isNowValid() {
+void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
   debouncing = false;
   bool currentState = digitalRead(pin);
   if (inverseLogic) currentState = !currentState;
@@ -461,11 +460,11 @@ void ARDUINO_ISR_ATTR Key::isNowValid() {
 }
 
 
-bool Key::isPressed() {
+bool KeyDebouncer::isPressed() {
   return state;
 }
 
-void Key::loop() {
+void KeyDebouncer::loop() {
   if (loopPressed) {
     callMeIfPressedOnLoopHandler();
     loopPressed = false;
@@ -478,7 +477,7 @@ void Key::loop() {
 
 
 void key_loop() {
-  for (std::vector<Key *>::iterator i = keys.begin(); i < keys.end(); i++) {
+  for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     (*i)->loop();
   }
 }

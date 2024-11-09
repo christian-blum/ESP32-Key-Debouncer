@@ -1,8 +1,8 @@
 #include <Arduino.h>
 
-#include "key.h"
+#include "key_debouncer.h"
 
-Key key(19, true, 200000, 500000);
+KeyDebouncer key(19, true, 200000, 500000);
 
 bool lastState;
 

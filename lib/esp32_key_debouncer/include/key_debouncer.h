@@ -1,9 +1,14 @@
 #ifndef __ESP32_KEY_DEBOUNCER_KEY_H
 #define __ESP32_KEY_DEBOUNCER_KEY_H
 
+#define KEY_DEBOUNCER_TIMER 3
+#define KEY_DEBOUNCER_DIVIDER 80
+#define KEY_DEBOUNCER_GPIO_PINS 48  // 00 - 47
+#define KEY_DEBOUNCER_DEBOUNCE_TIME_US 20000 // state needs to be stable for 20 ms to make a state change valid
+
 #include <Arduino.h>
 
-class Key {
+class KeyDebouncer {
   private:
     bool isRegistered;
     bool inverseLogic;
@@ -22,10 +27,10 @@ class Key {
     void action();
 
   public:
-    Key(uint8_t pin);
-    Key(uint8_t pin, bool inverseLogic);
-    Key(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay);
-    ~Key();
+    KeyDebouncer(uint8_t pin);
+    KeyDebouncer(uint8_t pin, bool inverseLogic);
+    KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay);
+    ~KeyDebouncer();
 
     bool begin();
     bool isPressed();
