@@ -8,8 +8,12 @@ class Key {
     bool isRegistered;
     bool inverseLogic;
     uint64_t lastInterruptWhen;
-    void (*callMeIfPressedHandler)();
-    void (*callMeIfReleasedHandler)();
+    void (*callMeIfPressedOnInterruptHandler)();
+    void (*callMeIfReleasedOnInterruptHandler)();
+    void (*callMeIfPressedOnLoopHandler)();
+    void (*callMeIfReleasedOnLoopHandler)();
+    volatile bool loopPressed;
+    volatile bool loopReleased;
 
     /* not yet implemented */
     time_t autoRepeatDelay;
@@ -21,21 +25,26 @@ class Key {
     Key(uint8_t pin, bool inverseLogic, time_t autoRepeatDelay, time_t autoRepeatPeriod);
     ~Key();
 
-    uint8_t pin;
-    bool state;
-    bool debouncing;
-    int64_t validWhen;
-    int interruptCounter;
-
     bool begin();
     bool isPressed();
-    void callMeIfPressed(void (*handler)());
-    void callMeIfReleased(void (*handler)());
+    void callMeIfPressedOnInterrupt(void (*handler)());
+    void callMeIfReleasedOnInterrupt(void (*handler)());
+    void callMeIfPressedOnLoop(void (*handler)());
+    void callMeIfReleasedOnLoop(void (*handler)());
 
     // don't call any of these
     void interrupt();
     void isNowValid();
+    void loop();
 
+    // It's okay to sneak but don't modify please
+    bool debouncing;
+    uint8_t pin;
+    bool state;
+    int64_t validWhen;
+    int interruptCounter;
 };
+
+void key_loop();
 
 #endif
