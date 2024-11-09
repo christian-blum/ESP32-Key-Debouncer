@@ -19,10 +19,12 @@ class Key {
     time_t autoRepeatDelay;
     time_t autoRepeatPeriod;
 
+    void action();
+
   public:
     Key(uint8_t pin);
     Key(uint8_t pin, bool inverseLogic);
-    Key(uint8_t pin, bool inverseLogic, time_t autoRepeatDelay, time_t autoRepeatPeriod);
+    Key(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay);
     ~Key();
 
     bool begin();
@@ -36,12 +38,15 @@ class Key {
     void interrupt();
     void isNowValid();
     void loop();
+    void actionRepeat();
 
     // It's okay to sneak but don't modify please
     bool debouncing;
     uint8_t pin;
     bool state;
-    int64_t validWhen;
+    bool repeat;
+    uint64_t validWhen;
+    uint64_t repeatWhen;
     int interruptCounter;
 };
 

@@ -322,6 +322,10 @@ static void ARDUINO_ISR_ATTR key_manager_reschedule() {
       if (earliest > (*i)->validWhen) earliest = (*i)->validWhen;
       needed = true;
     }
+    if ((*i)->repeat) {
+      if (earliest > (*i)->repeatWhen) earliest = (*i)->repeatWhen;
+      needed = true;
+    }
   }
   if (needed) {
     timerAlarmDisable(key_manager_timer);
@@ -337,6 +341,7 @@ static void ARDUINO_ISR_ATTR key_manager_timer_interrupt() {
   uint64_t now = timerRead(key_manager_timer);
   for (std::vector<Key *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (now >= (*i)->validWhen) (*i)->isNowValid();
+    if ((*i)->repeat && now >= (*i)->repeatWhen) (*i)->actionRepeat();
   }
   key_manager_reschedule();
 }
@@ -367,7 +372,7 @@ static void key_manager_removeKey(Key *key) {
 
 
 
-Key::Key(uint8_t pin, bool inverseLogic, time_t autoRepeatDelay, time_t autoRepeatPeriod) {
+Key::Key(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay) {
   Key::pin = pin;
   Key::inverseLogic = inverseLogic;
   Key::autoRepeatDelay = autoRepeatDelay;
@@ -415,8 +420,22 @@ void ARDUINO_ISR_ATTR Key::interrupt() {
   lastInterruptWhen = timerRead(key_manager_timer);
   validWhen = lastInterruptWhen + KEY_DEBOUNCER_DEBOUNCE_TIME_US;
   debouncing = true;
+  repeat = false;
   interruptCounter++;
   key_manager_reschedule();
+}
+
+void ARDUINO_ISR_ATTR Key::action() {
+  if (state && callMeIfPressedOnInterruptHandler) (*callMeIfPressedOnInterruptHandler)();
+  if (!state && callMeIfReleasedOnInterruptHandler) (*callMeIfReleasedOnInterruptHandler)();
+  if (state && callMeIfPressedOnLoopHandler) loopPressed = true;
+  if (!state && callMeIfReleasedOnLoopHandler) loopReleased = true;
+}
+
+void ARDUINO_ISR_ATTR Key::actionRepeat() {
+  action();
+  uint64_t now = timerRead(key_manager_timer);
+  repeatWhen = now + autoRepeatPeriod;
 }
 
 void ARDUINO_ISR_ATTR Key::isNowValid() {
@@ -425,12 +444,22 @@ void ARDUINO_ISR_ATTR Key::isNowValid() {
   if (inverseLogic) currentState = !currentState;
   if (state != currentState) {
     state = currentState;
-    if (currentState && callMeIfPressedOnInterruptHandler) (*callMeIfPressedOnInterruptHandler)();
-    if (!currentState && callMeIfReleasedOnInterruptHandler) (*callMeIfReleasedOnInterruptHandler)();
-    if (currentState && callMeIfPressedOnLoopHandler) loopPressed = true;
-    if (!currentState && callMeIfReleasedOnLoopHandler) loopReleased = true;
+    action();
+    if (state) {
+      if (autoRepeatPeriod) {
+        uint64_t now = timerRead(key_manager_timer);
+        if (autoRepeatDelay) {
+          repeatWhen = now + autoRepeatDelay;
+        }
+        else {
+          repeatWhen = now + autoRepeatPeriod;
+        }
+        repeat = true;
+      }
+    }
   }
 }
+
 
 bool Key::isPressed() {
   return state;

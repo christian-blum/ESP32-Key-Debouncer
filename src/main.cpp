@@ -2,7 +2,7 @@
 
 #include "key.h"
 
-Key key(19, true);
+Key key(19, true, 200000, 500000);
 
 bool lastState;
 
