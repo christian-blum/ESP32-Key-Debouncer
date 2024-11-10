@@ -5,7 +5,7 @@ The library supports as many keys as you can connect, it supports calling your e
 
 Usage example:
 ```
-#include <KeyDebouncer.h>
+#include <key_debouncer.h>
 
 KeyDebouncer myKey(19, true); // Key connected to GPIO19 and GND
 // KeyDebouncer myKey(19, false); // Key connected to GPIO19 and VCC
