@@ -60,6 +60,6 @@ class KeyDebouncer {
     int interruptCounter;
 };
 
-void key_loop();
+void key_debouncer_loop();
 
 #endif
