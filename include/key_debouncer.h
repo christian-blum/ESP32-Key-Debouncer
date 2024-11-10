@@ -8,8 +8,8 @@
 
 #include <Arduino.h>
 
-bool key_manager_begin(uint8_t timer);
-bool key_manager_begin();
+bool key_debouncer_begin(uint8_t timer);
+bool key_debouncer_begin();
 
 class KeyDebouncer {
   private:

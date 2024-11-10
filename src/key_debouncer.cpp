@@ -4,8 +4,8 @@
 #include <vector>
 
 static std::vector<KeyDebouncer *> keys;
-static hw_timer_t *key_manager_timer;
-static bool key_manager_is_set_up;
+static hw_timer_t *key_debouncer_timer;
+static bool key_debouncer_is_set_up;
 static std::array<KeyDebouncer *, KEY_DEBOUNCER_GPIO_PINS> keys_for_interrupts;
 
 
@@ -300,17 +300,17 @@ static void (*key_manager_interrupt_handler[KEY_DEBOUNCER_GPIO_PINS])() = {
   key_interrupt_handler_47
 };
 
-static void key_manager_interrupt_handler_register(KeyDebouncer *key) {
+static void key_debouncer_interrupt_handler_register(KeyDebouncer *key) {
   keys_for_interrupts[key->pin] = key;
   attachInterrupt(key->pin, key_manager_interrupt_handler[key->pin], CHANGE);
 }
 
-static void key_manager_interrupt_handler_unregister(KeyDebouncer *key) {
+static void key_debouncer_interrupt_handler_unregister(KeyDebouncer *key) {
   detachInterrupt(key->pin);
   keys_for_interrupts[key->pin] = nullptr;
 }
 
-static void ARDUINO_ISR_ATTR key_manager_reschedule() {
+static void ARDUINO_ISR_ATTR key_debouncer_reschedule() {
   uint64_t earliest = -1;
   bool needed = false;
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
@@ -324,53 +324,53 @@ static void ARDUINO_ISR_ATTR key_manager_reschedule() {
     }
   }
   if (needed) {
-    timerAlarmDisable(key_manager_timer);
-    timerAlarmWrite(key_manager_timer, earliest, false);
-    timerAlarmEnable(key_manager_timer);
+    timerAlarmDisable(key_debouncer_timer);
+    timerAlarmWrite(key_debouncer_timer, earliest, false);
+    timerAlarmEnable(key_debouncer_timer);
   }
   else {
-    timerAlarmDisable(key_manager_timer);
+    timerAlarmDisable(key_debouncer_timer);
   }
 }
 
 static void ARDUINO_ISR_ATTR key_manager_timer_interrupt() {
-  uint64_t now = timerRead(key_manager_timer);
+  uint64_t now = timerRead(key_debouncer_timer);
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (now >= (*i)->validWhen) (*i)->isNowValid();
     if ((*i)->repeat && now >= (*i)->repeatWhen) (*i)->actionRepeat();
   }
-  key_manager_reschedule();
+  key_debouncer_reschedule();
 }
 
-bool key_manager_begin(uint8_t timer) {
-  if (key_manager_is_set_up) return true;
-  key_manager_timer = timerBegin(timer, KEY_DEBOUNCER_DIVIDER, true);
-  if (!key_manager_timer) return false;
-  timerAttachInterrupt(key_manager_timer, key_manager_timer_interrupt, false);
-  key_manager_is_set_up = true;
+bool key_debouncer_begin(uint8_t timer) {
+  if (key_debouncer_is_set_up) return true;
+  key_debouncer_timer = timerBegin(timer, KEY_DEBOUNCER_DIVIDER, true);
+  if (!key_debouncer_timer) return false;
+  timerAttachInterrupt(key_debouncer_timer, key_manager_timer_interrupt, false);
+  key_debouncer_is_set_up = true;
   return true;
 }
 
-bool key_manager_begin() {
-  return key_manager_begin(KEY_DEBOUNCER_DEFAULT_TIMER);
+bool key_debouncer_begin() {
+  return key_debouncer_begin(KEY_DEBOUNCER_DEFAULT_TIMER);
 }
 
-static bool key_manager_addKey(KeyDebouncer *key) {
-  if (!key_manager_begin()) return false;
+static bool key_debouncer_addKey(KeyDebouncer *key) {
+  if (!key_debouncer_begin()) return false;
   keys.push_back(key);
-  key_manager_interrupt_handler_register(key);
+  key_debouncer_interrupt_handler_register(key);
   return true;
 }
 
-static void key_manager_removeKey(KeyDebouncer *key) {
-  key_manager_interrupt_handler_unregister(key);
+static void key_debouncer_removeKey(KeyDebouncer *key) {
+  key_debouncer_interrupt_handler_unregister(key);
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (*i == key) keys.erase(i);
   }
   if (!keys.size()) {
-    timerDetachInterrupt(key_manager_timer);
-    timerEnd(key_manager_timer);
-    key_manager_is_set_up = false;
+    timerDetachInterrupt(key_debouncer_timer);
+    timerEnd(key_debouncer_timer);
+    key_debouncer_is_set_up = false;
   }
 }
 
@@ -392,7 +392,7 @@ KeyDebouncer::KeyDebouncer(uint8_t pin) : KeyDebouncer(pin, false) {
 
 KeyDebouncer::~KeyDebouncer() {
   if (isRegistered) {
-    key_manager_removeKey(this);
+    key_debouncer_removeKey(this);
     isRegistered = false;
   }
 }
@@ -402,7 +402,7 @@ bool KeyDebouncer::begin() {
   bool currentState = digitalRead(pin);
   state = inverseLogic ? !currentState : currentState;
   isRegistered = true;
-  return key_manager_addKey(this);
+  return key_debouncer_addKey(this);
 }
 
 void KeyDebouncer::setDebounceTime(time_t microseconds) {
@@ -426,12 +426,12 @@ void KeyDebouncer::callMeIfReleasedOnLoop(void (*handler)()) {
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::interrupt() {
-  lastInterruptWhen = timerRead(key_manager_timer);
+  lastInterruptWhen = timerRead(key_debouncer_timer);
   validWhen = lastInterruptWhen + debounceTime;
   debouncing = true;
   repeat = false;
   interruptCounter++;
-  key_manager_reschedule();
+  key_debouncer_reschedule();
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::action() {
@@ -443,7 +443,7 @@ void ARDUINO_ISR_ATTR KeyDebouncer::action() {
 
 void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
   action();
-  uint64_t now = timerRead(key_manager_timer);
+  uint64_t now = timerRead(key_debouncer_timer);
   repeatWhen = now + autoRepeatPeriod;
 }
 
@@ -456,7 +456,7 @@ void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
     action();
     if (state) {
       if (autoRepeatPeriod) {
-        uint64_t now = timerRead(key_manager_timer);
+        uint64_t now = timerRead(key_debouncer_timer);
         if (autoRepeatDelay) {
           repeatWhen = now + autoRepeatDelay;
         }
@@ -484,7 +484,7 @@ void KeyDebouncer::loop() {
   }
 }
 
-void key_loop() {
+void key_debouncer_loop() {
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     (*i)->loop();
   }
