@@ -1,17 +1,21 @@
 #ifndef __ESP32_KEY_DEBOUNCER_KEY_H
 #define __ESP32_KEY_DEBOUNCER_KEY_H
 
-#define KEY_DEBOUNCER_TIMER 3
+#define KEY_DEBOUNCER_DEFAULT_TIMER 3
 #define KEY_DEBOUNCER_DIVIDER 80
 #define KEY_DEBOUNCER_GPIO_PINS 48  // 00 - 47
-#define KEY_DEBOUNCER_DEBOUNCE_TIME_US 20000 // state needs to be stable for 20 ms to make a state change valid
+#define KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US 20000 // state needs to be stable for 20 ms to make a state change valid
 
 #include <Arduino.h>
+
+bool key_manager_begin(uint8_t timer);
+bool key_manager_begin();
 
 class KeyDebouncer {
   private:
     bool isRegistered;
     bool inverseLogic;
+    time_t debounceTime;
     uint64_t lastInterruptWhen;
     void (*callMeIfPressedOnInterruptHandler)();
     void (*callMeIfReleasedOnInterruptHandler)();
@@ -33,6 +37,7 @@ class KeyDebouncer {
     ~KeyDebouncer();
 
     bool begin();
+    void setDebounceTime(time_t microseconds);
     bool isPressed();
     void callMeIfPressedOnInterrupt(void (*handler)());
     void callMeIfReleasedOnInterrupt(void (*handler)());

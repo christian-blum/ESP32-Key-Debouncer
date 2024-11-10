@@ -9,9 +9,6 @@ static bool key_manager_is_set_up;
 static std::array<KeyDebouncer *, KEY_DEBOUNCER_GPIO_PINS> keys_for_interrupts;
 
 
-
-
-
 static void ARDUINO_ISR_ATTR key_interrupt_handler_00() {
   KeyDebouncer *key = keys_for_interrupts[0];
   if (key) key->interrupt();
@@ -345,18 +342,21 @@ static void ARDUINO_ISR_ATTR key_manager_timer_interrupt() {
   key_manager_reschedule();
 }
 
-static bool key_manager_begin() {
-  key_manager_timer = timerBegin(KEY_DEBOUNCER_TIMER, KEY_DEBOUNCER_DIVIDER, true);
+bool key_manager_begin(uint8_t timer) {
+  if (key_manager_is_set_up) return true;
+  key_manager_timer = timerBegin(timer, KEY_DEBOUNCER_DIVIDER, true);
   if (!key_manager_timer) return false;
   timerAttachInterrupt(key_manager_timer, key_manager_timer_interrupt, false);
   key_manager_is_set_up = true;
   return true;
 }
 
+bool key_manager_begin() {
+  return key_manager_begin(KEY_DEBOUNCER_DEFAULT_TIMER);
+}
+
 static bool key_manager_addKey(KeyDebouncer *key) {
-  if (!key_manager_is_set_up) {
-    if (!key_manager_begin()) return false;
-  }
+  if (!key_manager_begin()) return false;
   keys.push_back(key);
   key_manager_interrupt_handler_register(key);
   return true;
@@ -367,6 +367,11 @@ static void key_manager_removeKey(KeyDebouncer *key) {
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (*i == key) keys.erase(i);
   }
+  if (!keys.size()) {
+    timerDetachInterrupt(key_manager_timer);
+    timerEnd(key_manager_timer);
+    key_manager_is_set_up = false;
+  }
 }
 
 
@@ -376,6 +381,7 @@ KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeri
   KeyDebouncer::inverseLogic = inverseLogic;
   KeyDebouncer::autoRepeatDelay = autoRepeatDelay;
   KeyDebouncer::autoRepeatPeriod = autoRepeatPeriod;
+  KeyDebouncer::debounceTime = KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US;
 }
 
 KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic) : KeyDebouncer(pin, inverseLogic, 0, 0) {
@@ -399,6 +405,10 @@ bool KeyDebouncer::begin() {
   return key_manager_addKey(this);
 }
 
+void KeyDebouncer::setDebounceTime(time_t microseconds) {
+  debounceTime = microseconds;
+}
+
 void KeyDebouncer::callMeIfPressedOnInterrupt(void (*handler)()) {
   callMeIfPressedOnInterruptHandler = handler;
 }
@@ -417,7 +427,7 @@ void KeyDebouncer::callMeIfReleasedOnLoop(void (*handler)()) {
 
 void ARDUINO_ISR_ATTR KeyDebouncer::interrupt() {
   lastInterruptWhen = timerRead(key_manager_timer);
-  validWhen = lastInterruptWhen + KEY_DEBOUNCER_DEBOUNCE_TIME_US;
+  validWhen = lastInterruptWhen + debounceTime;
   debouncing = true;
   repeat = false;
   interruptCounter++;
@@ -459,7 +469,6 @@ void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
   }
 }
 
-
 bool KeyDebouncer::isPressed() {
   return state;
 }
@@ -474,7 +483,6 @@ void KeyDebouncer::loop() {
     loopReleased = false;
   }
 }
-
 
 void key_loop() {
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
