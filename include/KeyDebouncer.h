@@ -1,7 +1,16 @@
 #ifndef __ESP32_KEY_DEBOUNCER_KEY_H
 #define __ESP32_KEY_DEBOUNCER_KEY_H
 
+#if defined(ESP32)
 #define KEY_DEBOUNCER_DEFAULT_TIMER 3
+#else
+#if defined(ESP8266)
+#define KEY_DEBOUNCER_DEFAULT_TIMER 1
+#else
+#error Unsupported architecture.
+#endif
+#endif
+
 #define KEY_DEBOUNCER_DIVIDER 80
 #define KEY_DEBOUNCER_GPIO_PINS 48  // 00 - 47
 #define KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US 20000 // state needs to be stable for 20 ms to make a state change valid
