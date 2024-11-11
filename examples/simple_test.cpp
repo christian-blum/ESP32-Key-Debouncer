@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "key_debouncer.h"
+#include "KeyDebouncer.h"
 
 KeyDebouncer key(19, true, 200000, 500000);
 
@@ -28,6 +28,6 @@ void loop() {
     Serial.print(state); Serial.print(" "); Serial.println(key.interruptCounter);
     lastState = state;
   }
-  key_loop();
+  KeyDebouncer_loop();
 }
 

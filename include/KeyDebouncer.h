@@ -8,8 +8,9 @@
 
 #include <Arduino.h>
 
-bool key_debouncer_begin(uint8_t timer);
-bool key_debouncer_begin();
+bool KeyDebouncer_begin(uint8_t timer);
+bool KeyDebouncer_begin();
+void KeyDebouncer_loop();
 
 class KeyDebouncer {
   private:
@@ -59,7 +60,5 @@ class KeyDebouncer {
     uint64_t repeatWhen;
     int interruptCounter;
 };
-
-void key_debouncer_loop();
 
 #endif
