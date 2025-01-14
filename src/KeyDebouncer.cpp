@@ -424,6 +424,10 @@ void KeyDebouncer::callMeIfReleasedOnLoop(void (*handler)()) {
   callMeIfReleasedOnLoopHandler = handler;
 }
 
+void KeyDebouncer::callMeIfLongPressedOnLoop(void (*handler)()) {
+  callMeIfLongPressedOnLoopHandler = handler;
+}
+
 void ARDUINO_ISR_ATTR KeyDebouncer::interrupt() {
   lastInterruptWhen = timerRead(KeyDebouncer_timer);
   validWhen = lastInterruptWhen + debounceTime;
