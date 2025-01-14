@@ -10,7 +10,7 @@ Usage example:
 
 KeyDebouncer myKey(19, true); // Key connected to GPIO19 and GND
 // KeyDebouncer myKey(19, false); // Key connected to GPIO19 and VCC
-// KeyDebouncer myKey(19, true, 100000, 200000); // Key connected to GPIO19 and GND, auto-repeat 10 times per second after 200 milliseconds delay
+// KeyDebouncer myKey(19, true, 100000, 200000, 1000000); // Key connected to GPIO19 and GND, auto-repeat 10 times per second after 200 milliseconds delay, tell me if pressed for more than a second
 
 void key_pressed() {
   Serial.println("key pressed");
@@ -19,7 +19,7 @@ void key_pressed() {
 void setup() {
   ...
   myKey.begin();
-  myKey.callMeWhenPressedOnLoop(key_pressed);
+  myKey.callMeIfPressedOnLoop(key_pressed);
   ...
 }
 
@@ -55,18 +55,19 @@ Return value: `true` if all went well, `false` if not.
 ```
 
 Call this in your `loop()` function. You don't _have_ to, strictly speaking, but if you want to use `callMeIfPressedOnLoop(handler)`
-or `callMeIfReleasedOnLoop(handler)`, you must. Just do it. There, that wasn't too bad, was it?
+or `callMeIfReleasedOnLoop(handler)` or `callMeIfLongPressedOnLoop(handler)`, you must. Just do it. There, that wasn't too bad, was it?
 
 ### Constructors
 
 ```
   KeyDebouncer(uint8_t pin);
   KeyDebouncer(uint8_t pin, bool inverseLogic);
-  KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay);
+  KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod = 0, time_t autoRepeatDelay = 0, time_t longPressDelay = 0);
 ```
 
 Creates a key debouncer instance. You need to provide the GPIO pin number, and you may request inverse logic (if your key is wired to GND instead of 3V3).
-If you would like the key to auto-repeat, provide the times in microseconds as well.
+If you would like the key to auto-repeat, provide the times in microseconds as well. If you want to be notified for long presses, provide the desired
+delay in microseconds.
 
 ### Destructor
 
@@ -93,6 +94,7 @@ Poll the current state of the key. No, don't. I mean ... you _can_. But why woul
     void callMeIfPressedOnInterrupt(void (*handler)());
     void callMeIfReleasedOnInterrupt(void (*handler)());
     void callMeIfPressedOnLoop(void (*handler)());
+    void callMeIfLongPressedOnLoop(void (*handler)());
     void callMeIfReleasedOnLoop(void (*handler)());
 ```
 
@@ -144,7 +146,7 @@ been stable for at least the debouncing period. Simple as that!
 ## Copyright and License
 
 ESP32 Key Debouncer
-Copyright (C) 2024 Christian Blum
+Copyright (C) 2024, 2025 Christian Blum
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
