@@ -30,6 +30,7 @@ class KeyDebouncer {
     void (*callMeIfPressedOnInterruptHandler)();
     void (*callMeIfReleasedOnInterruptHandler)();
     void (*callMeIfPressedOnLoopHandler)();
+    void (*callMeIfLongPressedOnLoopHandler)();
     void (*callMeIfReleasedOnLoopHandler)();
     volatile bool loopPressed;
     volatile bool loopReleased;
@@ -37,13 +38,13 @@ class KeyDebouncer {
     /* not yet implemented */
     time_t autoRepeatDelay;
     time_t autoRepeatPeriod;
+    time_t longPressedDelay;
 
     void action();
 
   public:
     KeyDebouncer(uint8_t pin);
-    KeyDebouncer(uint8_t pin, bool inverseLogic);
-    KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay);
+    KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod = 0, time_t autoRepeatDelay = 0, time_t longPressedDelay = 0);
     ~KeyDebouncer();
 
     bool begin();
@@ -52,6 +53,7 @@ class KeyDebouncer {
     void callMeIfPressedOnInterrupt(void (*handler)());
     void callMeIfReleasedOnInterrupt(void (*handler)());
     void callMeIfPressedOnLoop(void (*handler)());
+    void callMeIfLongPressedOnLoop(void (*handler)());
     void callMeIfReleasedOnLoop(void (*handler)());
 
     // don't call any of these
@@ -59,14 +61,17 @@ class KeyDebouncer {
     void isNowValid();
     void loop();
     void actionRepeat();
+    void actionLongPressed();
 
     // It's okay to sneak but don't modify please
     bool debouncing;
     uint8_t pin;
     bool state;
     bool repeat;
+    bool longPressed;
     uint64_t validWhen;
     uint64_t repeatWhen;
+    uint64_t longPressedWhen;
     int interruptCounter;
 };
 

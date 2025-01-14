@@ -338,6 +338,7 @@ static void ARDUINO_ISR_ATTR KeyDebouncer_timer_interrupt() {
   for (std::vector<KeyDebouncer *>::iterator i = keys.begin(); i < keys.end(); i++) {
     if (now >= (*i)->validWhen) (*i)->isNowValid();
     if ((*i)->repeat && now >= (*i)->repeatWhen) (*i)->actionRepeat();
+    if ((*i)->longPressedWhen && now >= (*i)->longPressedWhen) (*i)->actionLongPressed();
   }
   KeyDebouncer_reschedule();
 }
@@ -376,15 +377,13 @@ static void KeyDebouncer_removeKey(KeyDebouncer *key) {
 
 
 
-KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay) {
+KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeriod, time_t autoRepeatDelay, time_t longPressedDelay) {
   KeyDebouncer::pin = pin;
   KeyDebouncer::inverseLogic = inverseLogic;
   KeyDebouncer::autoRepeatDelay = autoRepeatDelay;
   KeyDebouncer::autoRepeatPeriod = autoRepeatPeriod;
+  KeyDebouncer::longPressedDelay = longPressedDelay;
   KeyDebouncer::debounceTime = KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US;
-}
-
-KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic) : KeyDebouncer(pin, inverseLogic, 0, 0) {
 }
 
 KeyDebouncer::KeyDebouncer(uint8_t pin) : KeyDebouncer(pin, false) {
@@ -447,6 +446,10 @@ void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
   repeatWhen = now + autoRepeatPeriod;
 }
 
+void ARDUINO_ISR_ATTR KeyDebouncer::actionLongPressed() {
+  longPressed = true;
+}
+
 void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
   debouncing = false;
   bool currentState = digitalRead(pin);
@@ -465,6 +468,13 @@ void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
         }
         repeat = true;
       }
+      if (longPressedDelay) {
+        uint64_t now = timerRead(KeyDebouncer_timer);
+        longPressedWhen = now + longPressedDelay;
+      }
+    }
+    else {
+      longPressedWhen = 0;
     }
   }
 }
@@ -481,6 +491,10 @@ void KeyDebouncer::loop() {
   if (loopReleased) {
     callMeIfReleasedOnLoopHandler();
     loopReleased = false;
+  }
+  if (longPressed) {
+    callMeIfLongPressedOnLoopHandler();
+    longPressed = false;
   }
 }
 
