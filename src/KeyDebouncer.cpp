@@ -322,6 +322,10 @@ static void ARDUINO_ISR_ATTR KeyDebouncer_reschedule() {
       if (earliest > (*i)->repeatWhen) earliest = (*i)->repeatWhen;
       needed = true;
     }
+    if ((*i)->longPressedWhen) {
+      if (earliest > (*i)->longPressedWhen) earliest = (*i)->longPressedWhen;
+      needed = true;
+    }
   }
   if (needed) {
     timerAlarmDisable(KeyDebouncer_timer);
@@ -451,7 +455,7 @@ void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::actionLongPressed() {
-  longPressed = true;
+  if (state) longPressed = true;
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
@@ -462,8 +466,8 @@ void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
     state = currentState;
     action();
     if (state) {
+      uint64_t now = timerRead(KeyDebouncer_timer);
       if (autoRepeatPeriod) {
-        uint64_t now = timerRead(KeyDebouncer_timer);
         if (autoRepeatDelay) {
           repeatWhen = now + autoRepeatDelay;
         }
@@ -473,7 +477,6 @@ void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
         repeat = true;
       }
       if (longPressedDelay) {
-        uint64_t now = timerRead(KeyDebouncer_timer);
         longPressedWhen = now + longPressedDelay;
       }
     }
