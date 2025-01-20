@@ -26,18 +26,20 @@ bool KeyDebouncer_begin();
 void KeyDebouncer_loop();
 
 class KeyDebouncer {
-  private:
+  protected:
     bool isRegistered;
     bool inverseLogic;
     time_t debounceTime;
     uint64_t lastInterruptWhen;
     void (*callMeIfPressedOnInterruptHandler)();
+    void (*callMeIfLongPressedOnInterruptHandler)();
     void (*callMeIfReleasedOnInterruptHandler)();
     void (*callMeIfPressedOnLoopHandler)();
     void (*callMeIfLongPressedOnLoopHandler)();
     void (*callMeIfReleasedOnLoopHandler)();
     volatile bool loopPressed;
     volatile bool loopReleased;
+    volatile bool loopLongPressed;
 
     /* not yet implemented */
     time_t autoRepeatDelay;
@@ -55,6 +57,7 @@ class KeyDebouncer {
     void setDebounceTime(time_t microseconds);
     bool isPressed();
     void callMeIfPressedOnInterrupt(void (*handler)());
+    void callMeIfLongPressedOnInterrupt(void (*handler)());
     void callMeIfReleasedOnInterrupt(void (*handler)());
     void callMeIfPressedOnLoop(void (*handler)());
     void callMeIfLongPressedOnLoop(void (*handler)());
@@ -72,7 +75,6 @@ class KeyDebouncer {
     uint8_t pin;
     bool state;
     bool repeat;
-    bool loopLongPressed;
     uint64_t validWhen;
     uint64_t repeatWhen;
     uint64_t longPressedWhen;

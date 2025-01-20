@@ -416,6 +416,10 @@ void KeyDebouncer::callMeIfPressedOnInterrupt(void (*handler)()) {
   callMeIfPressedOnInterruptHandler = handler;
 }
 
+void KeyDebouncer::callMeIfLongPressedOnInterrupt(void (*handler)()) {
+  callMeIfLongPressedOnInterruptHandler = handler;
+}
+
 void KeyDebouncer::callMeIfReleasedOnInterrupt(void (*handler)()) {
   callMeIfReleasedOnInterruptHandler = handler;
 }
@@ -455,7 +459,11 @@ void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::actionLongPressed() {
-  if (state && callMeIfLongPressedOnLoopHandler) loopLongPressed = true;
+  if (state) {
+    if (callMeIfLongPressedOnInterruptHandler) (*callMeIfLongPressedOnInterruptHandler)();
+    if (callMeIfLongPressedOnLoopHandler) loopLongPressed = true;
+  }
+  longPressedWhen = 0;
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
