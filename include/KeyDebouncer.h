@@ -72,7 +72,7 @@ class KeyDebouncer {
     uint8_t pin;
     bool state;
     bool repeat;
-    bool longPressed;
+    bool loopLongPressed;
     uint64_t validWhen;
     uint64_t repeatWhen;
     uint64_t longPressedWhen;

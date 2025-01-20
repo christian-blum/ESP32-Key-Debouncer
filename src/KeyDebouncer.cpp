@@ -455,7 +455,7 @@ void ARDUINO_ISR_ATTR KeyDebouncer::actionRepeat() {
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::actionLongPressed() {
-  if (state) longPressed = true;
+  if (state && callMeIfLongPressedOnLoopHandler) loopLongPressed = true;
 }
 
 void ARDUINO_ISR_ATTR KeyDebouncer::isNowValid() {
@@ -495,13 +495,13 @@ void KeyDebouncer::loop() {
     callMeIfPressedOnLoopHandler();
     loopPressed = false;
   }
+  if (loopLongPressed) {
+    callMeIfLongPressedOnLoopHandler();
+    loopLongPressed = false;
+  }
   if (loopReleased) {
     callMeIfReleasedOnLoopHandler();
     loopReleased = false;
-  }
-  if (longPressed) {
-    callMeIfLongPressedOnLoopHandler();
-    longPressed = false;
   }
 }
 
