@@ -31,7 +31,7 @@ void loop() {
 ```
 
 You don't have to use the library's ability to call handlers; just poll `myKey.isPressed()` instead if you prefer to make your life miserable.
-We all have our fetishs and there's no need to be ashamed.
+We all have our fetishs and quirks, and there's no need to be ashamed of them.
 
 ## Documentation (kind of)
 
@@ -44,8 +44,9 @@ We all have our fetishs and there's no need to be ashamed.
 
 Call one of these early in your setup() function. You don't _have_ to, strictly speaking, because it is done automagically for you
 when you create your first instance and call its `begin()` method, but if you want control and want to be able to choose the
-timer, do it in `setup()`. The default timer for the ESP32 is `3`, but you can use any available timer. The ESP32 has four of them,
-numbered 0 to 3. The ESP8266 only has two, and the first timer is needed for wifi so you'll probably want to use timer `1`.
+timer, do it in `setup()` (be sure to check the return value: true indicates that all went well, and false that it didn't).
+The default timer for most ESP32 variants is `3`, but you can use any available timer. The ESP32 has four of them,
+numbered 0 to 3. The ESP8266 (and some ESP32 variants) only has two, and the first timer is needed for wifi so you'll probably want to use timer `1`.
 This is also the default.
 
 Return value: `true` if all went well, `false` if not.
@@ -92,6 +93,7 @@ Poll the current state of the key. No, don't. I mean ... you _can_. But why woul
 
 ```
     void callMeIfPressedOnInterrupt(void (*handler)());
+    void callMeIfLongPressedOnInterrupt(void (*handler)());
     void callMeIfReleasedOnInterrupt(void (*handler)());
     void callMeIfPressedOnLoop(void (*handler)());
     void callMeIfLongPressedOnLoop(void (*handler)());
@@ -107,10 +109,12 @@ You have been warned.
 The __Loop__ versions are called in loop context and provide _ASAP_ signalling of key state changes. Unless you have very good reasons
 to use the interrupt versions, it is strongly suggested that you use the loop versions.
 
-The __Released__ handlers are always called only once when the key is released. The __Pressed__ handlers are called at least once when the
-key is pressed, but may be called several times if you have configured auto repetition and the button is pressed long enough.
+The __Released__ handlers are always only called once when the key is released. The __Pressed__ handlers are called at least once when the
+key is pressed, but may be called several times if you have configured auto repetition and the button is pressed long enough. Yes, you can
+configure both long presses and auto repetition at the same time. Have fun, but don't complain if it gets messy.
 
-Please refrain from calling other public methods that you may find in the header file. It is only in your best interest. Thank you for your cooperation.
+Please refrain from calling other public methods that you may find in the header file. It is only in your best interest.
+Thank you for your cooperation in this important matter.
 
 ### Properties
 
@@ -124,14 +128,15 @@ There are no public properties that you actually need to use, but some may be us
 Checking `state` is equivalent to calling `isPressed()`. Use whatever you prefer. (Or better, don't. See above.)
 
 `interruptCounter` will tell you how many bounces of your key have been detected since creation of the `KeyDebouncer` instance.
-Use it if you want to see how bad your keys are. The worst of them may bounce a hundred times for each press or release.
+Use it if you want to see how bad your keys are. The worst of them may bounce a dozen times for each press or release.
 This does mean of course that pressing or releasing them wastes a certain amount of CPU time, and better keys waste less.
+Don't worry too much though; the ESP family has lots of muscle.
 
 ## Limitations
 
 At one point your hardware timers will overflow. This will probably cause problems with key debouncing for a few milliseconds.
 On variants with 64 bit counters this will happen every 584,942 years, and on variants with 56 bit counters it's every 2,284 years.
-You decide if you care; I don't.
+You decide if you care; I don't give a (imagine your favorite swear-word here).
 
 ## How it works
 
