@@ -134,9 +134,13 @@ Don't worry too much though; the ESP family has lots of muscle.
 
 ## Limitations
 
-At one point your hardware timers will overflow. This will probably cause problems with key debouncing for a few milliseconds.
-On variants with 64 bit counters this will happen every 584,942 years, and on variants with 56 bit counters it's every 2,284 years.
-You decide if you care; I don't give a (imagine your favorite swear-word here).
+At some point in time the hardware timers will overflow. This will probably cause problems with key debouncing for a few milliseconds.
+On variants with 64 bit counters this will happen every 584,942 years, on variants with 56 bit counters it's every 2,284 years,
+and variants having 52 bit counters overflow every 142 years. The worst that can happen is that you lose key press or release
+notifications when the counter wraps around. You decide if you care; I don't give a (imagine your favorite swear-word here)
+because I will definitely be dead when that happens for the first time and no-one can sue me (or you, for the same reason).
+Heck, I doubt that the MCU will survive that long, and the power supply will probably blow up before too! How reliable is
+your power grid?
 
 ## How it works
 
