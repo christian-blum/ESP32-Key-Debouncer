@@ -388,6 +388,13 @@ KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeri
   KeyDebouncer::autoRepeatPeriod = autoRepeatPeriod;
   KeyDebouncer::longPressedDelay = longPressedDelay;
   KeyDebouncer::debounceTime = KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US;
+
+  callMeIfPressedOnInterruptHandler = nullptr;
+  callMeIfLongPressedOnInterruptHandler = nullptr;
+  callMeIfReleasedOnInterruptHandler = nullptr;
+  callMeIfPressedOnLoopHandler = nullptr;
+  callMeIfLongPressedOnLoopHandler = nullptr;
+  callMeIfReleasedOnLoopHandler = nullptr;
 }
 
 KeyDebouncer::KeyDebouncer(uint8_t pin) : KeyDebouncer(pin, false) {
@@ -500,15 +507,15 @@ bool KeyDebouncer::isPressed() {
 
 void KeyDebouncer::loop() {
   if (loopPressed) {
-    callMeIfPressedOnLoopHandler();
+    if (callMeIfPressedOnLoopHandler) callMeIfPressedOnLoopHandler();
     loopPressed = false;
   }
   if (loopLongPressed) {
-    callMeIfLongPressedOnLoopHandler();
+    if (callMeIfLongPressedOnLoopHandler) callMeIfLongPressedOnLoopHandler();
     loopLongPressed = false;
   }
   if (loopReleased) {
-    callMeIfReleasedOnLoopHandler();
+    if (callMeIfReleasedOnLoopHandler) callMeIfReleasedOnLoopHandler();
     loopReleased = false;
   }
 }
