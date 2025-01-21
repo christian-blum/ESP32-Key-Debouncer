@@ -388,13 +388,6 @@ KeyDebouncer::KeyDebouncer(uint8_t pin, bool inverseLogic, time_t autoRepeatPeri
   KeyDebouncer::autoRepeatPeriod = autoRepeatPeriod;
   KeyDebouncer::longPressedDelay = longPressedDelay;
   KeyDebouncer::debounceTime = KEY_DEBOUNCER_DEFAULT_DEBOUNCE_TIME_US;
-
-  callMeIfPressedOnInterruptHandler = nullptr;
-  callMeIfLongPressedOnInterruptHandler = nullptr;
-  callMeIfReleasedOnInterruptHandler = nullptr;
-  callMeIfPressedOnLoopHandler = nullptr;
-  callMeIfLongPressedOnLoopHandler = nullptr;
-  callMeIfReleasedOnLoopHandler = nullptr;
 }
 
 KeyDebouncer::KeyDebouncer(uint8_t pin) : KeyDebouncer(pin, false) {

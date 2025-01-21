@@ -27,24 +27,23 @@ void KeyDebouncer_loop();
 
 class KeyDebouncer {
   protected:
-    bool isRegistered;
-    bool inverseLogic;
-    time_t debounceTime;
-    uint64_t lastInterruptWhen;
-    void (*callMeIfPressedOnInterruptHandler)();
-    void (*callMeIfLongPressedOnInterruptHandler)();
-    void (*callMeIfReleasedOnInterruptHandler)();
-    void (*callMeIfPressedOnLoopHandler)();
-    void (*callMeIfLongPressedOnLoopHandler)();
-    void (*callMeIfReleasedOnLoopHandler)();
-    volatile bool loopPressed;
-    volatile bool loopReleased;
-    volatile bool loopLongPressed;
+    bool isRegistered = false;
+    bool inverseLogic = false;
+    time_t debounceTime = 0;
+    uint64_t lastInterruptWhen = 0;
+    void (*callMeIfPressedOnInterruptHandler)() = nullptr;
+    void (*callMeIfLongPressedOnInterruptHandler)() = nullptr;
+    void (*callMeIfReleasedOnInterruptHandler)() = nullptr;
+    void (*callMeIfPressedOnLoopHandler)() = nullptr;
+    void (*callMeIfLongPressedOnLoopHandler)() = nullptr;
+    void (*callMeIfReleasedOnLoopHandler)() = nullptr;
+    volatile bool loopPressed = false;
+    volatile bool loopReleased = false;
+    volatile bool loopLongPressed = false;
 
-    /* not yet implemented */
-    time_t autoRepeatDelay;
-    time_t autoRepeatPeriod;
-    time_t longPressedDelay;
+    time_t autoRepeatDelay = 0;
+    time_t autoRepeatPeriod = 0;
+    time_t longPressedDelay = 0;
 
     void action();
 
@@ -71,14 +70,14 @@ class KeyDebouncer {
     void actionLongPressed();
 
     // It's okay to sneak but don't modify please
-    bool debouncing;
-    uint8_t pin;
-    bool state;
-    bool repeat;
-    uint64_t validWhen;
-    uint64_t repeatWhen;
-    uint64_t longPressedWhen;
-    int interruptCounter;
+    bool debouncing = false;
+    int8_t pin = -1;
+    bool state = false;
+    bool repeat = false;
+    uint64_t validWhen = 0;
+    uint64_t repeatWhen = 0;
+    uint64_t longPressedWhen = 0;
+    int interruptCounter = 0;
 };
 
 #endif
